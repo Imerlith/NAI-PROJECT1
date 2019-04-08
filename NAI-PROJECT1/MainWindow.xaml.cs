@@ -42,7 +42,11 @@ namespace NAI_PROJECT1
 
         private void SubmitBtn_Click(object sender, RoutedEventArgs e)
         {
-           
+            //TO nie działa ani tez nie dziala pobranie Buttons.remove(SubmitBtn);
+            var toRemove = Buttons.ToList().FirstOrDefault(b => b.Name == "SubmitBtn");
+            Console.WriteLine(Buttons.Count());
+            if (toRemove != null) Buttons.ToList().Remove(toRemove);
+            Console.WriteLine(Buttons.Count());
             Block();
         }
         private void Block()
