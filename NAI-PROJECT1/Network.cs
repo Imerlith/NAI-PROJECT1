@@ -1,69 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace NAI_PROJECT1
 {
     class Network
     {
-        
-         
         private List<Neuron> Neurons;
-
-        public void InitiateNetwork()
+        private double Alpha;
+        private List<Training> TrainingSet; 
+        public Network(int numberOfNeurons,List<Training> TrainingSet,double Alpha)
         {
-            Neurons = new List<Neuron>
+            Neurons = new List<Neuron>();
+            this.Alpha = Alpha;
+            this.TrainingSet = TrainingSet;
+            for (int i = 0; i < numberOfNeurons; i++)
             {
-                new Neuron(),
-                new Neuron(),
-                new Neuron()
-            };
-            foreach(Neuron neuron in Neurons)
+                Neurons.Add(new Neuron());
+            }
+            foreach (Neuron neuron in Neurons)
             {
                 neuron.RadomizeWeights();
             }
         }
+       
         public void StartLearning()
         {
             
-            var correctFor0 = new List<double>(new double[] {0,1,1,0,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,0,1,1,0});
-            var expedtedFor0 = new List<int>(new int[] {1,0,0 });
-            var correctFor1 = new List<double>(new double[] { 0, 0, 1, 0 , 0, 0, 1, 0 , 0, 0, 1, 0, 0, 0, 1, 0 , 0, 0, 1, 0 , 0, 0, 1, 0 ,  });
-            var expedtedFor1 = new List<int>(new int[] { 0, 1, 0 });
-            var correctFor2 = new List<double>(new double[] { 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1 });
-            var expedtedFor2 = new List<int>(new int[] { 0, 0, 1 });
-            var correctInputs = new List<List<double>>
-            {
-                correctFor0,
-                correctFor1,
-                correctFor2
-            };
-            var expectedOutputs = new List<List<int>>
-            {
-                expedtedFor0,
-                expedtedFor1,
-                expedtedFor2
-            };
+           
             for (int i = 1; i < 101; i++)
             {
                 double networkError = 0;
                 Console.WriteLine("Ucze się już "+i+" epoke");
-                for (int j = 0; i < Neurons.Count(); i++)
+                foreach(Training training in TrainingSet)
                 {
-                    
-                    var input = correctInputs.ElementAt(j);
-                    var net =   Neurons.ElementAt(j).CalculateNet(input);
-                    var output = Neurons.ElementAt(j).CalculateOutput(net);
-                    var expected = expectedOutputs.ElementAt(j).ElementAt(j);
-                    if (output != expected)
+                    var output = new List<double>();
+                    foreach(Neuron neuron in Neurons)
                     {
-                        Neurons.ElementAt(j).CalculateNewWeights(output, expected, input);
-                        networkError += Math.Pow((expected - output), 2);
+                        output.Add(CalculateOutput(training.Input,neuron));
+
                     }
-                    
+                    CalculateNewWeights(output, training.Expected, training.Input);
+                    for (int j = 0; j < training.Expected.Count(); j++)
+                    {
+                        networkError += Math.Pow((training.Expected.ElementAt(j)-output.ElementAt(j)), 2);
+                    }
                 }
+               
                 networkError /= 2;
                 Console.WriteLine(networkError);
                 if (networkError == 0.0)
@@ -74,16 +58,60 @@ namespace NAI_PROJECT1
             }
 
         }
-        public void Test(IEnumerable<double> input)
+        public string Test(IEnumerable<double> input)
         {
+            string response="";
             Console.WriteLine("TESTOWE");
+
             foreach(Neuron neuron in Neurons)
             {
-                var net = neuron.CalculateNet(input);
-                var y = neuron.CalculateOutput(net);
+                var y = CalculateOutput(input, neuron);
+                response += y;
                 Console.WriteLine(y);
             }
+            switch (response)
+            {
+                case "100": response = "Liczba to : 0"; break;
+                case "010": response = "Liczba to : 1"; break;
+                case "001": response = "Liczba to : 2"; break;
+                default:response = "Nieznana liczba";break;
+            }
+            return response;
         }
-        
+        private double CalculateOutput(IEnumerable<double> input, Neuron neuron)
+        {
+            var net = 0.0;
+            for (int i = 0; i < input.Count(); i++)
+            {
+                net += input.ElementAt(i) * neuron.Weigths.ElementAt(i);
+            }
+            net += neuron.Bias;
+            return Activate(net);
+        }
+        private double Activate(double net)
+        {
+            return net >= 0 ? 1 : 0;
+        }
+        private void CalculateNewWeights(List<double> received, List<double>  expected, List<double> input)
+        {
+
+            for (int i = 0; i < Neurons.Count(); i++)
+      
+            {
+                var nWeights = new List<double>();
+                for (int j = 0; j < input.Count(); j++)
+                {
+                    var oldW = Neurons.ElementAt(i).Weigths.ElementAt(j);
+                    nWeights.Add(oldW +Alpha * (expected.ElementAt(i) - received.ElementAt(i)) * input.ElementAt(j));
+                }
+                Neurons.ElementAt(i).Weigths = nWeights;
+                Neurons.ElementAt(i).Bias += Alpha * (expected.ElementAt(i) - received.ElementAt(i));
+            }
+
+            
+        }
+       
+
+
     }
 }

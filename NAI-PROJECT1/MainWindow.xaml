@@ -53,5 +53,7 @@
         <Button Grid.Row="6" Grid.Column="3"  Click="Button_Click" Background="Gray"/>
         <Button Grid.Row="6" Grid.Column="4"  Click="Button_Click" Background="Gray"/>
         <Button Name="SubmitBtn" Content="Zatwierdź" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="4" Click="SubmitBtn_Click"/>
+        <Label Name="ResultLbl" Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="4" Content="Wynik"
+               HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" FontSize="20"/>
     </Grid>
 </Window>

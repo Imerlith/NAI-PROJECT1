@@ -24,8 +24,27 @@ namespace NAI_PROJECT1
         {
             InitializeComponent();
             Buttons = FindVisualChildren<Button>(this);
-             network = new Network();
-            network.InitiateNetwork();
+            var training1 = new Training {
+                Input = new List<double>(new double[] { 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0 }),
+                Expected = new List<double>(new double[] { 1, 0, 0 })
+            };
+            var training2 = new Training
+            {
+                Input =  new List<double>(new double[] { 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, }),
+                Expected = new List<double>(new double[] { 0, 1, 0 })
+            };
+            var training3 = new Training
+            {
+                Input = new List<double>(new double[] { 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1 }),
+                Expected = new List<double>(new double[] { 0, 0, 1 })
+            };
+            var trainingSet = new List<Training>
+            {
+                training1,
+                training2,
+                training3
+            };
+            network = new Network(3,trainingSet,0.5); 
             network.StartLearning();
            
         }
@@ -65,7 +84,7 @@ namespace NAI_PROJECT1
                 }
             }
             input.ForEach(Console.WriteLine);
-            network.Test(input);
+           ResultLbl.Content = network.Test(input);
             Reset();
         }
         private void Block()
