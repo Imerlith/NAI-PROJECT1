@@ -23,7 +23,9 @@ namespace NAI_PROJECT1
         public MainWindow()
         {
             InitializeComponent();
+            //Znajduje wszystkie przyciski z MainWindow.xaml oprocz Zatwierdz
             Buttons = FindVisualChildren<Button>(this);
+            //Tworzenie danych do nauki
             var training1 = new Training {
                 Input = new List<double>(new double[] { 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0 }),
                 Expected = new List<double>(new double[] { 1, 0, 0 })
@@ -44,11 +46,14 @@ namespace NAI_PROJECT1
                 training2,
                 training3
             };
+            //Tworzymy nową sieć z 3 Neuronami listą  z danymi treningowymi oraz zmienną uczącą Alpha o wartości 0.5 
             network = new Network(3,trainingSet,0.5); 
+            //uczymy sieć na podstawie danych treningowych
             network.StartLearning();
            
         }
 
+        //Zmienianie koloru przycisków które zaznaczamy gdy rysujemy liczbę
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
@@ -65,13 +70,10 @@ namespace NAI_PROJECT1
 
         private void SubmitBtn_Click(object sender, RoutedEventArgs e)
         {
-            //TO nie działa ani tez nie dziala pobranie Buttons.remove(SubmitBtn);
-            //var toRemove = Buttons.ToList().FirstOrDefault(b => b.Name == "SubmitBtn");
-            //Console.WriteLine(Buttons.Count());
-            //if (toRemove != null) Buttons.ToList().Remove(toRemove);
-            //Console.WriteLine(Buttons.Count());
+            //Blokujemy przyciski na czas obliczania
             Block();
             var input = new List<double>();
+            //Tworzymy wektor wejść jeśli przycisk byl czerwony to daje nam 1 0 wpp
             foreach(Button b in Buttons)
             {
                 if (b.Background == Brushes.Red)
@@ -84,7 +86,9 @@ namespace NAI_PROJECT1
                 }
             }
             input.ForEach(Console.WriteLine);
+            //Inicjujemy zapytanie do sieci i ustalamy odpowiedz do Label pod przyciskiem Zatwierdź
            ResultLbl.Content = network.Test(input);
+            //Aktywujemy przyciski i ustawiamy je na szaro 
             Reset();
         }
         private void Block()
@@ -104,6 +108,7 @@ namespace NAI_PROJECT1
                 button.Background = Brushes.Gray;
             }
         }
+        //Metoda pomocnicza znajdująca elementy z xaml danego typu 
         private static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
         {
             if (depObj != null)

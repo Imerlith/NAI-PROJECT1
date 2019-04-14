@@ -15,10 +15,12 @@ namespace NAI_PROJECT1
             Neurons = new List<Neuron>();
             this.Alpha = Alpha;
             this.TrainingSet = TrainingSet;
+            //Dodajemy neurony do sieci
             for (int i = 0; i < numberOfNeurons; i++)
             {
                 Neurons.Add(new Neuron());
             }
+            //Dla kazdego neuronu ustawiamy losowe wartosci wektora wag
             foreach (Neuron neuron in Neurons)
             {
                 neuron.RadomizeWeights();
@@ -28,11 +30,12 @@ namespace NAI_PROJECT1
         public void StartLearning()
         {
             
-           
+           // Uczymy sie dopóki bład nie będzie równy 0 lub nie minie 100 epok
             for (int i = 1; i < 101; i++)
             {
                 double networkError = 0;
                 Console.WriteLine("Ucze się już "+i+" epoke");
+                //Przechodzimy przez wszystkie zestawy treningowe dla kazdego neuronu przy kazdym przejsciu sprawdzamy blad sieci 
                 foreach(Training training in TrainingSet)
                 {
                     var output = new List<double>();
@@ -50,6 +53,7 @@ namespace NAI_PROJECT1
                
                 networkError /= 2;
                 Console.WriteLine(networkError);
+                //Jesli blad sieci wynosi 0 konczymy nauke przerywajac petle
                 if (networkError == 0.0)
                 {
                     Console.WriteLine("Nauczylem sie");
@@ -58,6 +62,7 @@ namespace NAI_PROJECT1
             }
 
         }
+        //Metoda sprawdzajaca wejscie dla nauczonej sieci 
         public string Test(IEnumerable<double> input)
         {
             string response="";
@@ -88,6 +93,7 @@ namespace NAI_PROJECT1
             net += neuron.Bias;
             return Activate(net);
         }
+        //Funkcja aktywacji w tym przypadku jest to liniowa unipolarna 
         private double Activate(double net)
         {
             return net >= 0 ? 1 : 0;
